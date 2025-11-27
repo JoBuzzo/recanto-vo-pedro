@@ -63,6 +63,7 @@ class MakeReservation extends Component
         ]);
 
         $this->setReservations();
+        $this->form->reset(['startDate', 'endDate', 'totalDays', 'totalPrice', 'notes', 'startDate', 'endDate']);
 
         Flux::modal('make-reservation')->close();
     }
