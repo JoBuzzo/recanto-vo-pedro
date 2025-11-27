@@ -18,17 +18,29 @@
         @php
             $currentDate = Carbon::createFromDate($this->year, $this->month + 1, $date);
             $isPast = $currentDate->isBefore(Carbon::today());
+            $isReserved = $this->dayIsReserved($currentDate);
         @endphp
-        <button
-            @class([
-                "h-10 md:h-12 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:bg-primary/10 text-foreground" => ! $isPast,
-                "h-10 md:h-12 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 text-muted-foreground/40 cursor-not-allowed" => $isPast,
-            ])
 
-            @disabled($isPast)
-        >
-            {{ $date }}
-        </button>
+        <flux:modal.trigger name="make-reservation">
+            <button
+                @class([
+                    "h-10 md:h-12 rounded-lg text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" => true,
+
+                    // Disponível
+                    "hover:bg-primary/10 text-foreground" => ! $isPast && ! $isReserved,
+
+                    // Indisponível (reservado)
+                    "bg-red-500 text-white cursor-not-allowed opacity-80" => $isReserved,
+
+                    // Data passada
+                    "text-muted-foreground/40 cursor-not-allowed" => $isPast,
+                ])
+                wire:click="setDate('{{ $this->year }}', '{{ $this->month + 1 }}', '{{ $date }}')"
+                @disabled($isPast || $isReserved)
+            >
+                {{ $date }}
+            </button>
+        </flux:modal.trigger>
     @endforeach
 </div>
 
